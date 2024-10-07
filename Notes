@@ -1,1 +1,4 @@
 // Multer needs to be added to backend in middlewares 4:25:00
+
+
+//in the models for appication we r only storign one user when multiple people can apply for it

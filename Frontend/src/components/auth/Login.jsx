@@ -3,16 +3,20 @@ import Navbar from "../Shared/Navbar";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
-import { Link } from "react-router-dom";
+import { Link ,useNavigate} from "react-router-dom";
 import { Button } from "../ui/button";
 import { toast } from "sonner";
+import { useDispatch, useSelector } from "react-redux";
+import { Loader2 } from "lucide-react";
 function Signup() {
     const [input, setInput] = useState({
         email: "",
         password: "",
     });
 
+    const {loading,setLoading}=useSelector(store=>store.auth)
     const navigate=useNavigate();
+    const dispatch=useDispatch();
 
     const changevalueHandler = (e) => {
         setInput({ ...input, [e.target.name]: e.target.value });
@@ -21,6 +25,7 @@ function Signup() {
     const submitHandler=async (e)=>{
         e.preventDefault();
         try{
+            dispatch(setLoading(true));
             const res= await axios.post(`${USER_API_ENDPOINT}/login`,input,{
                 header:{
                     "Content-Type":"application/json",
@@ -33,6 +38,8 @@ function Signup() {
             }
         }catch(error){
             console.log("Register::Problem Sending Data")
+        }finally{
+            dispatch(setLoading(false));
         }
     }
     return (
@@ -68,7 +75,9 @@ function Signup() {
                             placeholder="Enter Password:"
                         />
                     </div>
-                    <Button type="submit" className="w-full my-4">Login</Button>
+                    {
+                        loading? <Button className="w-full my-4"><Loader2 className="mr-2 h-4 w-4 animate-spin" />Please Wait</Button> : <Button type="submit" className="w-full my-4">Login</Button>
+                    }
                     <span className="text-sm items-center">
                         <div className="mx-auto max-w-3xl">
                             Dont have an Account? <Link to="/signup" className="text-blue-400">Signup</Link>

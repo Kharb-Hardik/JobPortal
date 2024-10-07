@@ -6,7 +6,9 @@ import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "../ui/button";
 import { USER_API_ENDPOINT } from "@/utils/constant";
-import {toast} from "../ui/sonner"
+import { toast } from 'sonner'
+import { useDispatch,useSelector } from "react-redux";
+import { setLoading } from "@/redux/authSlice";
 function Signup() {
     const [input, setInput] = useState({
         name: "",
@@ -17,7 +19,9 @@ function Signup() {
         file: "",
     });
 
+    const {loading}=useSelector(store=>store.auth)
     const navigate=useNavigate();
+    const dispatch=useDispatch();
 
     const changevalueHandler = (e) => {
         setInput({ ...input, [e.target.name]: e.target.value });
@@ -37,6 +41,7 @@ function Signup() {
             formData.append("file",input.file);
         }
         try{
+            dispatch(setLoading(true));
             const res= await axios.post(`${USER_API_ENDPOINT}/register`,formData,{
                 header:{
                     "Content-Type":"multipart/form-data",
@@ -49,6 +54,8 @@ function Signup() {
             }
         }catch(error){
             console.log("Register::Problem Sending Data")
+        }finally{
+            dispatch(setLoading(false));
         }
     }
     return (
@@ -64,7 +71,7 @@ function Signup() {
                         <h1 className="text-2xl font-bold mx-2 mb-5">
                             Sign<span className="text-[rgb(248,48,2)]">Up</span>
                         </h1>
-                    </div>N
+                    </div>
                     <div className="my-2">
                         <Label htmlFor="name">Name:</Label>
                         <Input
@@ -140,7 +147,9 @@ function Signup() {
                             />
                         </div>
                     </div>
-                    <Button type="submit" className="w-full my-4">Signup</Button>
+                    {
+                        loading? <Button className="w-full my-4"><Loader2 className="mr-2 h-4 w-4 animate-spin" />Please Wait</Button> : <Button type="submit" className="w-full my-4">Signup</Button>
+                    }
                     <span className="text-sm items-center">
                         <div className="mx-auto max-w-3xl">
                             Already Have  an Account? <Link to="/login" className="text-blue-400">Login</Link>
